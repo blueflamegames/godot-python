@@ -1,10 +1,6 @@
-.. image:: https://travis-ci.org/touilleMan/godot-python.svg?branch=master
-   :target: https://travis-ci.org/touilleMan/godot-python
-   :alt: Automated test status (Linux and MacOS)
-
-.. image:: https://ci.appveyor.com/api/projects/status/af4eyed8o8tc3t0r/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/touilleMan/godot-python/branch/master
-   :alt: Automated test status (Windows)
+.. image:: https://img.shields.io/azure-devops/tests/godot-python/godot-python/1/master.svg
+    :target: https://dev.azure.com/godot-python/godot-python/_build?definitionId=1&_a=summary
+    :alt: Azure DevOps tests
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/ambv/black
@@ -16,7 +12,7 @@ Godot Python, because you want Python on Godot !
 ================================================
 
 
-.. image:: https://cdn.rawgit.com/touilleMan/godot-python/104c90e3/misc/godot_python.svg
+.. image:: https://github.com/touilleMan/godot-python/raw/master/misc/godot_python.svg
    :width: 200px
    :align: right
 
@@ -30,153 +26,32 @@ Quickstart
 By order of simplicity:
 
 - Directly download the project from within Godot with the asset library tab.
-- You can also download manually `here <https://godotengine.org/asset-library/asset/179>`_ (CPython backend) and `there <https://godotengine.org/asset-library/asset/192>`_ (for Pypy backend).
+- Download from the `asset library website <https://godotengine.org/asset-library/asset/179>`_.
 - Finally you can also head to the project `release page <https://github.com/touilleMan/godot-python/releases>`_ if you want to only download one specific platform build
 
-Building
-========
 
-To build the project from source, first checkout the repo or download the
-latest tarball.
-
-Linux
------
-
-On a fresh Ubuntu install, you will need to install these:
-
-.. code-block:: bash
-
-	$ apt install build-essential scons python3 python3-pip curl git
-	$ pip3 install virtualenv --user
-
-If you are using CPython as your backend, you will need additional
-libraries to build from source. The simplest way is to uncomment the
-main deb-src in `/etc/apt/sources.list`:
-
-.. code-block:: bash
-
-	deb-src http://archive.ubuntu.com/ubuntu/ artful main
-
-and instruct apt to install the needed packages:
-
-.. code-block:: bash
-
-	$ apt update
-	$ apt build-dep python3.6
-
-See the `Python Developer's Guide <https://devguide.python.org/setup/#build-dependencies>`_
-for instructions on additional platforms.
-
-MacOS
------
-
-With MacOS, you will need XCode installed and install the command line tools.
-
-.. code-block:: bash
-
-	$ xcode-select --install
-
-If you are using CPython as your backend, you will need these. To install with Homebrew:
-
-.. code-block:: bash
-
-	$ brew install python3 scons openssl zlib
-
-You will also need virtualenv for your python.
-
-Running the build
------------------
-
-From your `godot-python` directory:
-
-
-For Linux:
-
-.. code-block:: bash
-
-	godot-python$ scons platform=x11-64 backend=cpython release
-
-For Windows:
-
-.. code-block:: bash
-
-	godot-python$ scons platform=windows-64 backend=cpython release
-
-For MacOS, you will need to customize our cpp to use clang. Your final command will look like:
-
-.. code-block:: bash
-
-	godot-python$ scons platform=osx-64 backend=cpython gdnative_parse_cpp="clang -E" release
-
-Valid platforms are `x11-64`, `x11-32`, `windows-64`, `windows-32` and `osx-64`. Check Travis
-or Appveyor links above to see the current status of your platform.
-
-Valid backends are `cpython`, `pypy`.
-
-This command will download the pinned version of the Godot GDNative wrapper
-library (defined in SConstruct and platform specific SCSub files). It will then
-download a pinned pypy release binary or checkout cpython, move to a pinned
-commit and build cpython from source. It will generate the CFFI bindings and
-compile the shared library for your platform. The output of this command
-is a zip file which are shared on the release page.
-
-Testing your build
-------------------
-
-.. code-block:: bash
-
-	godot-python$ scons platform=<platform> backend=<backend> test
-
-This will run pytests defined in `tests/bindings` inside the Godot environment.
-If not present, will download a precompiled Godot binary
-(defined in SConstruct and platform specific SCSub files) to and set the
-correct library path for the GDNative wrapper.
-
-Running the example project
----------------------------
-
-.. code-block:: bash
-
-	godot-python$ scons platform=<platform> backend=cpython example
-
-This will run the converted pong example in `examples/pong` inside the Godot
-environment. If not present, will download a precompiled Godot binary
-(defined in SConstruct) to and set the correct library path for the GDNative wrapper.
-
-
-Using a local Godot version
----------------------------
-
-If you have a pre-existing version of godot, you can instruct the build script to
-use that the static library and binary for building and tests.
-
-.. code-block:: bash
-
-	godot-python$ scons platform=x11-64 backend=cpython godot_binary=../godot/bin/godot.x11.opt.64 gdnative_wrapper_lib=../godot/modules/include/libgdnative_wrapper_code.x11.opt.64.a
-
-Additional build options
-------------------------
-
-You check out all the build options `in this file <https://github.com/touilleMan/godot-python/blob/master/SConstruct#L23>`_.
+.. image:: https://github.com/touilleMan/godot-python/raw/master/misc/showcase.png
+   :align: center
 
 
 API
----
+===
 
 example:
 
 .. code-block:: python
 
 	# Explicit is better than implicit
-	from godot import exposed, export
-	from godot.bindings import Node2D, Vector2
+	from godot import exposed, export, Vector2, Node2D, ResourceLoader
 
+	WEAPON_RES = ResourceLoader.load("res://weapon.tscn")
+	SPEED = Vector2(10, 10)
 
 	@exposed
 	class Player(Node2D):
 		"""
 		This is the file's main class which will be made available to Godot. This
-		class must inherit from `godot.Node` or any of its children (i.g.
+		class must inherit from `godot.Node` or any of its children (e.g.
 		`godot.KinematicBody`).
 
 		Because Godot scripts only accept file paths, you can't have two `exposed` classes in the same file.
@@ -197,58 +72,266 @@ example:
 
 		# All methods are exposed to Godot
 		def talk(self, msg):
-			print("I'm saying %s" % msg)
+			print(f"I'm saying {msg}")
 
 		def _ready(self):
 			# Don't confuse `__init__` with Godot's `_ready`!
+			self.weapon = WEAPON_RES.instance()
 			self._age = 42
 			# Of course you can access property & methods defined in the parent
 			name = self.get_name()
-			print('%s position x=%s, y=%s' % (name, self.position.x, self.position.y))
+			print(f"{name} position x={self.position.x}, y={self.position.y}")
+
+		def _process(self, delta):
+			self.position += SPEED * delta
 
 		...
 
 
 	class Helper:
 		"""
-		Othes classes are considered helpers and cannot be called from outside
+		Other classes are considered helpers and cannot be called from outside
 		Python. However they can be imported from another python module.
 		"""
 		...
 
 
-Technical internals
-===================
+Building
+========
 
-The project is built with the awesome `CFFI <https://cffi.readthedocs.io/en/latest/>`_.
-Before that, both `Micropython <https://github.com/micropython/micropython>`_ and
-`Pybind11 <https://github.com/pybind/pybind11>`_ have been tried, but each comes with
-its own drawback (basically API complexity and compatibility for Micropython,
-C++ craziness and output size for Pybind11) so they just couldn't compete with
-CFFI ;-)
+To build the project from source, first checkout the repo or download the
+latest tarball.
 
-CFFI connects with Godot C APIs:
-- `GDnative <https://godotengine.org/article/dlscript-here>`_ for calling Godot functions
-- Pluginscript for registering callback function for Godot
-CFFI connects to Godot C
+Godot-Python requires Python >= 3.7 and a C compiler.
 
-Map of the code:
 
-- ``pythonscript.[c|h]``: Godot Pluginscript entry point.
-- ``cffi_bindings/api.h`` & ``cffi_bindings/api_struct.h``: Exposed C api use in the language classes implementations.
-- ``cffi_bindings/*.inc.py``: Python code that will be verbatim included in the pythonscript module.
-- ``cffi_bindings/builtin_*.inc.py``: Python binding for Godot builtins
-- ``cffi_bindings/embedding_init_code.inc.py``: Very first Python code that will be executed on module loading.
-- ``cffi_bindings/mod_godot.inc.py``: Python ``godot`` module code.
-- ``cffi_bindings/mod_godot_bindings.inc.py``: Python ``godot.bindings`` module code.
-- ``cffi_bindings/cdef.gen.h``: C Godot's GDnative API ready to be used by the CFFI generator.
-  This file is generated by ``tools/generate_gdnative_cffidefs.py``.
-- ``cffi_bindings/pythonscriptcffi.cpp``: Pythonscript module output by the CFFI generator.
-  This file is generated by ``cffi_bindings/generate.py``.
+Godot GDNative header
+---------------------
+
+
+The Godot GDNative headers are provided as git submodule:
+
+.. code-block:: bash
+
+	$ git submodule init
+	$ git submodule update
+
+Alternatively, you can get them `from github <https://github.com/GodotNativeTools/godot_headers>`_.
+
+
+Linux
+-----
+
+
+On a fresh Ubuntu install, you will need to install these:
+
+.. code-block:: bash
+
+	$ apt install python3 python3-pip python3-venv build-essential
+
+On top of that build the CPython interpreter requires development headers
+of it `extension modules <https://devguide.python.org/setup/#install-dependencies>`_
+(for instance if you lack sqlite dev headers, your Godot-Python build won't
+contain the sqlite3 python module)
+
+The simplest way is to uncomment the main deb-src in `/etc/apt/sources.list`:
+
+.. code-block:: bash
+
+	deb-src http://archive.ubuntu.com/ubuntu/ artful main
+
+and instruct apt to install the needed packages:
+
+.. code-block:: bash
+
+	$ apt update
+	$ apt build-dep python3.6
+
+See the `Python Developer's Guide <https://devguide.python.org/setup/#build-dependencies>`_
+for instructions on additional platforms.
+
+
+MacOS
+-----
+
+With MacOS, you will need XCode installed and install the command line tools.
+
+.. code-block:: bash
+
+	$ xcode-select --install
+
+If you are using CPython as your backend, you will need these. To install with Homebrew:
+
+.. code-block:: bash
+
+	$ brew install python3 openssl zlib
+
+You will also need virtualenv for your python.
+
+
+Windows
+-------
+
+
+Install VisualStudio and Python3, then submit a PR to improve this paragraph ;-)
+
+
+Create the virtual env
+----------------------
+
+Godot-Python build system is heavily based on Python (mainly Scons, Cython and Jinja2).
+Hence we have to create a Python virtual env to install all those dependencies
+without clashing with your global Python configuration.
+
+
+.. code-block:: bash
+
+	$ cd <godot-python-dir>
+	godot-python$ python3 -m venv venv
+
+
+Now you need to activate the virtual env, this is something you should do
+every time you want to use the virtual env.
+
+For Linux/MacOS:
+
+.. code-block:: bash
+
+	godot-python$ . ./venv/bin/activate
+
+For Windows:
+
+.. code-block:: bash
+
+	godot-python$ ./venv/bin/activate.bat
+
+
+Finally we can install dependencies:
+
+.. code-block:: bash
+
+	godot-python(venv)$ pip install -r requirements.txt
+
+
+Running the build
+-----------------
+
+
+For Linux:
+
+.. code-block:: bash
+
+	godot-python(venv)$ scons platform=x11-64 release
+
+For Windows:
+
+.. code-block:: bash
+
+	godot-python(venv)$ scons platform=windows-64 release
+
+For MacOS:
+
+.. code-block:: bash
+
+	godot-python(venv)$ scons platform=osx-64 CC=clang release
+
+Valid platforms are `x11-64`, `x11-32`, `windows-64`, `windows-32` and `osx-64`.
+Check Travis or Appveyor links above to see the current status of your platform.
+
+This command will checkout CPython repo, move to a pinned commit and build
+CPython from source.
+
+It will then generate ``pythonscript/godot/bindings.pyx`` (Godot api bindings)
+from GDNative's ``api.json`` and compile it.
+This part is long and really memory demanding so be patient ;-)
+When hacking godot-python you can heavily speedup this step by passing
+``sample=true`` to scons in order to build only a small subset of the bindings.
+
+Eventually the rest of the source will be compiled and a zip build archive
+will be available in the build directory.
+
+
+Testing your build
+------------------
+
+.. code-block:: bash
+
+	godot-python(venv)$ scons platform=<platform> test
+
+This will run pytests defined in `tests/bindings` inside the Godot environment.
+If not present, will download a precompiled Godot binary (defined in SConstruct
+and platform specific SCSub files) to and set the correct library path for
+the GDNative wrapper.
+
+
+Running the example project
+---------------------------
+
+.. code-block:: bash
+
+	godot-python(venv)$ scons platform=<platform> example
+
+This will run the converted pong example in `examples/pong` inside the Godot
+environment. If not present, will download a precompiled Godot binary
+(defined in SConstruct) to and set the correct library path for the GDNative
+wrapper.
+
+
+Using a local Godot version
+---------------------------
+
+If you have a pre-existing version of godot, you can instruct the build script to
+use that the static library and binary for building and tests.
+
+.. code-block:: bash
+
+	godot-python(venv)$ scons platform=x11-64 godot_binary=../godot/bin/godot.x11.opt.64
+
+
+Additional build options
+------------------------
+
+You check out all the build options `in this file <https://github.com/touilleMan/godot-python/blob/master/SConstruct#L23>`_.
 
 
 FAQ
 ===
+
+**How can I export my project?**
+
+Currently, godot-python does not support automatic export, which means that the python environment is not copied to the release when using Godot's export menu. A release can be created manually:
+
+First, export the project in .zip format.
+
+Second, extract the .zip in a directory. For sake of example let's say the directory is called :code:`godotpythonproject`.
+
+Third, copy the correct Python environment into this folder (if it hasn't been automatically included in the export). Inside your project folder, you will need to find :code:`/addons/pythonscript/x11-64`, replacing "x11-64" with the correct target system you are deploying to. Copy the entire folder for your system, placing it at the same relative position, e.g. :code:`godotpythonproject/addons/pythonscript/x11-64` if your unzipped directory was "godotpythonproject". Legally speaking you should also copy LICENSE.txt from the pythonscript folder. (The lazy option at this point is to simply copy the entire addons folder from your project to your unzipped directory.)
+
+Fourth, place a godot release into the directory. The Godot export menu has probably downloaded an appropriate release already, or you can go to Editor -> Manage Export Templates inside Godot to download fresh ones. These are stored in a location which depends on your operating system. For example, on Windows they may be found at :code:`%APPDATA%\Godot\templates\ `; in Linux or OSX it is :code:`~/.godot/templates/`. Copy the file matching your export. (It may matter whether you selected "Export With Debug" when creating the .zip file; choose the debug or release version accordingly.)
+
+Running the Godot release should now properly execute your release. However, if you were developing on a different Python environment (say, the one held in the osx-64 folder) than you include with the release (for example the windows-64 folder), and you make any alterations to that environment, such as installing Python packages, these will not carry over; take care to produce a suitable Python environment for the target platform.
+
+See also `this issue <https://github.com/touilleMan/godot-python/issues/146>`_.
+
+**How can I use Python packages in my project?**
+
+In essence, godot-python installs a python interpreter inside your project which can then be distributed as part of the final game. Python packages you want to use need to be installed for that interpreter and of course included in the final release. This can be accomplished by using pip to install packages; however, pip is not provided, so it must be installed too.
+
+First, locate the correct python interpreter. This will be inside your project at :code:`addons\pythonscript\windows-64\python.exe` for 64-bit Windows, :code:`addons/pythonscript/ox-64/bin/python3` for OSX, etc. Then install pip by running:
+
+.. code-block::
+
+	addons\pythonscript\windows-64\python.exe -m ensurepip
+
+(substituting the correct python for your system). Any other method of installing pip at this location is fine too, and this only needs to be done once. Afterward, any desired packages can be installed by running
+
+.. code-block::
+
+	addons\pythonscript\windows-64\python.exe -m pip install numpy
+
+again, substituting the correct python executable, and replacing numpy with whatever packages you desire. The package can now be imported in your Python code as normal.
+
+Note that this will only install packages onto the target platform (here, windows-64), so when exporting the project to a different platform, care must be taken to provide all the necessary libraries.
 
 **How can I debug my project with PyCharm?**
 
@@ -304,5 +387,8 @@ manager to lock it::
   with arr.raw_access() as ptr:
       for i in range(10000):
           assert ptr[i] == i # so is this
+
+Keep in mind great performances comes with great responsabilities: there is no
+boundary check so you may end up with memory corruption if you don't take care ;-)
 
 See the `godot-python issue <https://github.com/touilleMan/godot-python/issues/84>`_.
