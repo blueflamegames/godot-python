@@ -1,6 +1,6 @@
-.. image:: https://img.shields.io/azure-devops/tests/godot-python/godot-python/1/master.svg
-    :target: https://dev.azure.com/godot-python/godot-python/_build?definitionId=1&_a=summary
-    :alt: Azure DevOps tests
+.. image:: https://github.com/touilleMan/godot-python/actions/workflows/build.yml/badge.svg
+    :target: https://github.com/touilleMan/godot-python/actions
+    :alt: Github action tests
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/ambv/black
@@ -10,6 +10,15 @@
 ================================================
 Godot Python, because you want Python on Godot !
 ================================================
+
+
+🚧🚨 **Heavy refactoring in progress** 🚨🚧
+
+The project is under heavy refactoring to support Godot4 (which is totally incompatible
+with the current codebase).
+
+Development is done on the `godot4-meson branch <https://github.com/touilleMan/godot-python/tree/godot4-meson>`_
+until things start getting usable.
 
 
 .. image:: https://github.com/touilleMan/godot-python/raw/master/misc/godot_python.svg
